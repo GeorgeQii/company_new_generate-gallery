@@ -1,0 +1,37 @@
+name: Generate PDF and Photo Gallery
+
+on:
+  push:
+    paths:
+      - 'pdfs/**'
+      - 'photos/**'
+      - '.github/workflows/generate-gallery.yml'
+      - 'generate_gallery.py'
+
+jobs:
+  build-gallery:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow  # 用于处理图片
+      
+      - name: Generate gallery HTML
+        run: python generate_gallery.py
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gallery
+    
